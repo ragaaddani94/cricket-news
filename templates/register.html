@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Register{% endblock %}
+
+{% block content %}
+<div class="glass-card mx-auto" style="max-width: 450px;">
+    <h2 class="text-center mb-4">Create Account</h2>
+
+    <form method="POST">
+        <div class="mb-3">
+            <label class="form-label">Username</label>
+            <input class="form-control" name="username" required />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Password</label>
+            <input class="form-control" type="password" name="password" required />
+        </div>
+
+        <button class="btn btn-gradient w-100">Register</button>
+    </form>
+</div>
+{% endblock %}

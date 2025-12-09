@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="glass-card">
+    <h1>Dashboard</h1>
+    <p class="lead">Welcome, {{ session['username'] }} 🎉</p>
+</div>
+{% endblock %}

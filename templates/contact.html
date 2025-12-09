@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Contact{% endblock %}
+
+{% block content %}
+<div class="glass-card mx-auto" style="max-width: 600px;">
+    <h2 class="text-center mb-3">Send a Message ✉️</h2>
+
+    <form method="POST">
+        <div class="mb-3">
+            <label class="form-label">Name</label>
+            <input class="form-control" name="name" required />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input class="form-control" type="email" name="email" required />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Message</label>
+            <textarea class="form-control" rows="4" name="message" required></textarea>
+        </div>
+
+        <button class="btn btn-gradient btn-lg w-100">Send Message</button>
+    </form>
+</div>
+{% endblock %}
