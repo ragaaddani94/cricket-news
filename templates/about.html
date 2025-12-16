@@ -1,24 +1,37 @@
 {% extends "base.html" %}
-{% block title %}Cricket News - About{% endblock %}
+{% block title %}About Us{% endblock %}
 {% block content %}
-<div class="glass-card p-4 mb-4">
-    <h1 class="mb-3 text-center">🏏 Daily Cricket News</h1>
-    <p class="text-center">Latest headlines (auto-updated from news feed)</p>
-</div>
+<div class="glass-card p-5 text-center">
+    <h1 class="mb-4">About Cricket Hub</h1>
+    <p class="lead mb-4">
+        Cricket Hub is your premium destination for real-time cricket news, scores, and updates.
+    </p>
+    <p>
+        Built with passion for the game, we aim to bring you the fastest and most reliable cricket information
+        wrapped in a modern, easy-to-use interface.
+    </p>
 
-<div class="row g-4">
-  {% for item in news %}
-  <div class="col-md-6">
-    <div class="glass-card p-4">
-      <h3>{{ item.title }}</h3>
-      <p>{{ item.published }}</p>
-      <a href="{{ item.link }}" target="_blank" class="btn btn-gradient mt-2">Read Full News 🔗</a>
+    <div class="row mt-5 justify-content-center">
+        <div class="col-md-4">
+            <div class="p-3 border rounded-3 bg-dark-subtle">
+                <h4>🚀 Fast Updates</h4>
+                <p class="small">Real-time news feed aggregation</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="p-3 border rounded-3 bg-dark-subtle">
+                <h4>🔒 Secure</h4>
+                <p class="small">User accounts protected by industry standards</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="p-3 border rounded-3 bg-dark-subtle">
+                <h4>📱 Mobile First</h4>
+                <p class="small">Responsive design for all devices</p>
+            </div>
+        </div>
     </div>
-  </div>
-  {% endfor %}
-</div>
 
-<div class="glass-card mt-4 p-3 text-center">
-    <p class="mb-0">More cricket news coming soon… Stay tuned! 📰🏏</p>
+    <a href="/contact" class="btn btn-gradient mt-5">Contact Us</a>
 </div>
 {% endblock %}

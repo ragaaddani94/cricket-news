@@ -12,29 +12,25 @@
     <p class="lead mt-4">
 
         <!-- LIVE SCORES -->
-        <a href="https://www.cricbuzz.com/cricket-match/live-scores" 
-           target="_blank" class="link-light fw-bold">
+        <a href="https://www.cricbuzz.com/cricket-match/live-scores" target="_blank" class="link-light fw-bold">
             Live Scores 📢
-        </a> 
+        </a>
         &nbsp; | &nbsp;
 
         <!-- MATCH HIGHLIGHTS -->
-        <a href="https://www.espncricinfo.com/cricket-match-highlights" 
-           target="_blank" class="link-light fw-bold">
+        <a href="https://www.espncricinfo.com/cricket-match-highlights" target="_blank" class="link-light fw-bold">
             Match Highlights ⭐
         </a>
         &nbsp; | &nbsp;
 
         <!-- PLAYER STATS -->
-        <a href="https://www.icc-cricket.com/rankings/mens/player-rankings" 
-           target="_blank" class="link-light fw-bold">
+        <a href="https://www.espncricinfo.com/records" target="_blank" class="link-light fw-bold">
             Player Stats 🧢
-        </a> 
+        </a>
         &nbsp; | &nbsp;
 
         <!-- IPL UPDATES -->
-        <a href="https://www.iplt20.com/news" 
-           target="_blank" class="link-light fw-bold">
+        <a href="https://www.iplt20.com/news" target="_blank" class="link-light fw-bold">
             IPL Updates 🏆
         </a>
 
@@ -42,9 +38,65 @@
         Stay tuned for the latest cricket action from around the world! 🌍
     </p>
 
-    <a href="/about" class="btn btn-gradient btn-lg mt-4">
+    <a href="/news" class="btn btn-gradient btn-lg mt-4">
         Read Today’s Cricket News 📰🏏
     </a>
 
+    <!-- DYNAMIC LIVE SCORE BOARD -->
+    <div class="mt-5">
+        <h2 class="mb-4">🔴 Live Cricket Scores</h2>
+        <div id="live-scores-container" class="row justify-content-center">
+            <div class="col-12 text-center">
+                <div class="spinner-border text-info" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-2 text-muted">Fetching latest scores...</p>
+            </div>
+        </div>
+    </div>
+
 </div>
+
+<script>
+    async function loadScores() {
+        try {
+            const response = await fetch('/scores');
+            const data = await response.json();
+            const container = document.getElementById('live-scores-container');
+
+            if (data.matches && data.matches.length > 0) {
+                container.innerHTML = ''; // Clear loading/old content
+                data.matches.forEach(match => {
+                    const matchCard = `
+                        <div class="col-md-6 mb-3">
+                            <div class="glass-card p-3 text-start">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <img src="${match.team1_img}" alt="Cap 1" class="rounded-circle border border-primary" width="40" height="40">
+                                    <h5 class="mod-title text-primary mb-0 mx-2 text-center" style="font-size: 1rem;">${match.title}</h5>
+                                    <img src="${match.team2_img}" alt="Cap 2" class="rounded-circle border border-primary" width="40" height="40">
+                                </div>
+                                <p class="mb-2 small text-center text-muted">${match.description}</p>
+                                <div class="text-center">
+                                    <a href="${match.link}" target="_blank" class="btn btn-sm btn-outline-primary">View Scorecard ↗</a>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    container.innerHTML += matchCard;
+                });
+            } else {
+                container.innerHTML = '<p class="text-muted">No live matches found at the moment.</p>';
+            }
+        } catch (error) {
+            console.error('Error loading scores:', error);
+            document.getElementById('live-scores-container').innerHTML = '<p class="text-danger">Failed to load scores. Retrying...</p>';
+        }
+    }
+
+    // Load immediately and then every 30 seconds
+    document.addEventListener('DOMContentLoaded', () => {
+        loadScores();
+        setInterval(loadScores, 30000);
+    });
+</script>
 {% endblock %}

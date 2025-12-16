@@ -40,21 +40,19 @@ users_collection = db["users"]
 contacts_collection = db["contacts"]
 
 # -----------------------------
-# EMAIL SENDER (CONTACT FORM)
+# EMAIL SENDER
 # -----------------------------
-def send_contact_email(name, email, message):
+def send_email(subject, body):
     """
-    Use SMTP credentials from env vars. If not set, function will just return False.
+    Generic email sender using SMTP credentials from env vars.
+    Returns True if sent/attempted (or mocked), False if failed.
     """
     if not (SMTP_USER and SMTP_PASSWORD and SMTP_TO_EMAIL):
-        print("SMTP not configured; skipping sending email (console log only).")
+        print(f"SMTP not configured; Mock sending email: Subject='{subject}'")
         return False
 
     SMTP_SERVER = "smtp.gmail.com"
     SMTP_PORT = 587
-
-    subject = f"New contact message from {name}"
-    body = f"Name: {name}\nEmail: {email}\n\nMessage:\n{message}"
 
     msg = MIMEText(body)
     msg["Subject"] = subject
@@ -66,11 +64,21 @@ def send_contact_email(name, email, message):
             server.starttls()
             server.login(SMTP_USER, SMTP_PASSWORD)
             server.send_message(msg)
-        print("Contact email sent successfully")
+        print(f"Email sent successfully: {subject}")
         return True
     except Exception as e:
         print("Error sending email:", e)
         return False
+
+def send_contact_notification(name, email, message):
+    subject = f"New Contact: {name}"
+    body = f"Name: {name}\nEmail: {email}\n\nMessage:\n{message}"
+    return send_email(subject, body)
+
+def send_registration_notification(username):
+    subject = f"New User Registered: {username}"
+    body = f"A new user has registered on the site.\n\nUsername: {username}\nTime: {time.ctime()}"
+    return send_email(subject, body)
 
 # -----------------------------
 # LOGIN REQUIRED DECORATOR
@@ -119,10 +127,38 @@ def fetch_news():
 def home():
     return render_template("index.html")
 
+@application.route("/news")
+def news():
+    news_items = fetch_news()
+    return render_template("news.html", news=news_items)
+
 @application.route("/about")
 def about():
-    news = fetch_news()
-    return render_template("about.html", news=news)
+    return render_template("about.html")
+
+@application.route("/scores")
+def scores():
+    # Fetch live cricket scores from Cricinfo RSS
+    try:
+        feed = feedparser.parse("http://static.cricinfo.com/rss/livescores.xml")
+        matches = []
+        for entry in feed.entries[:5]:  # Limit to 5 matches
+            # Mock Images for captains (since RSS doesn't provide them)
+            # In a real app, you'd fetch these from a paid API API or database
+            team1_img = "https://ui-avatars.com/api/?name=Captain+1&background=random&color=fff"
+            team2_img = "https://ui-avatars.com/api/?name=Captain+2&background=random&color=fff"
+            
+            matches.append({
+                "title": entry.get("title"),
+                "description": entry.get("description"),
+                "link": entry.get("link"),
+                "team1_img": team1_img,
+                "team2_img": team2_img
+            })
+        return {"matches": matches}
+    except Exception as e:
+        print("Error fetching scores:", e)
+        return {"matches": []}
 
 @application.route("/contact", methods=["GET", "POST"])
 def contact():
@@ -140,7 +176,7 @@ def contact():
             print("Mongo insert contact failed:", e)
 
         # Send email (if configured)
-        send_contact_email(name, email, message)
+        send_contact_notification(name, email, message)
 
         flash("Thanks for reaching out! We'll get back to you soon.", "success")
         return redirect(url_for("contact"))
@@ -168,6 +204,10 @@ def register():
             )
             session["user_id"] = str(result.inserted_id)
             session["username"] = username
+            
+            # Send notification to admin
+            send_registration_notification(username)
+
             flash("Registration successful! You are now logged in.", "success")
             return redirect(url_for("dashboard"))
         except Exception as e:
